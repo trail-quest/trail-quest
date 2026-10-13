@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trail Quest – Longview 4-H Great Outdoors</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,Arial,sans-serif;background:linear-gradient(#a8dadc,#e9f5db 40%,#b5c99a);color:#283618;min-height:100vh}
+.wrap{max-width:720px;margin:auto;padding:16px}h1{text-align:center;color:#2d6a4f;margin:.3em 0;font-size:2.2em}
+.card{background:#fefae0;border:4px solid #606c38;border-radius:20px;padding:20px;box-shadow:0 6px 0 #283618;margin-top:12px}
+button,input{font-size:1.25em;border-radius:14px;padding:16px;width:100%;margin:8px 0;border:3px solid #283618;font-family:inherit}
+button{background:#52b788;color:#081c15;font-weight:bold;cursor:pointer;min-height:64px}button:active{transform:translateY(2px)}
+button.ans{background:#fff;text-align:left}button.ok{background:#95d5b2}button.bad{background:#f4a3a3}button:disabled{cursor:default}
+.trail{display:flex;justify-content:space-between;align-items:center;background:#dda15e;border-radius:30px;padding:6px 8px;font-size:1.1em}
+.dot{width:22px;height:22px;border-radius:50%;background:#fefae0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.dot.done{background:#2d6a4f}.dot.now{background:#ffb703}.top{display:flex;justify-content:space-between;font-weight:bold;margin:8px 0}
+.q{font-size:1.4em;margin:6px 0 10px}.emoji{font-size:3em;text-align:center}.fb{font-size:1.15em;padding:10px;border-radius:12px;background:#e9f5db;margin-top:8px}
+.hidden{display:none}.badge{font-size:5em;text-align:center}
+</style></head><body><div class="wrap">
+<h1>🥾 Trail Quest 🌲</h1>
+<div id="start" class="card"><div class="emoji">🏔️🎒🎣</div><p>Welcome, Longview 4-H Great Outdoors explorer! Hike 12 trail stops, answer questions about Alberta fish, tracks, safety and Leave No Trace, and earn your trail badge!</p>
+<input id="name" placeholder="Your trail name" maxlength="20"><button id="go">Start Hiking! 🥾</button></div>
+<div id="game" class="card hidden"><div class="trail" id="trail"></div><div class="top"><span id="who"></span><span id="score"></span></div>
+<div class="emoji" id="qe"></div><div class="q" id="qt"></div><div id="answers"></div><div id="fb" class="fb hidden"></div><button id="next" class="hidden">Next Stop ➡️</button></div>
+<div id="end" class="card hidden"><div class="badge" id="bi"></div><h2 id="bt" style="text-align:center"></h2><p id="bm" style="font-size:1.2em;text-align:center"></p><button id="again">Play Again 🔁</button></div>
+</div><script>
+var Q=[
+["🐟","Which fish is Alberta's official provincial fish?",["Bull trout","Northern pike","Rainbow trout","Walleye"],"Bull trout became Alberta's provincial fish in 1995. They're a threatened species here, so any bull trout you catch must be released."],
+["🎣","If you catch a bull trout in Alberta, what must you do?",["Gently release it","Keep it for supper","Put it in a pail","Move it to another lake"],"Bull trout are catch-and-release only across Alberta. Get it back in the water quickly!"],
+["🌈","Which trout has a pink-red stripe along its side and lots of small black spots?",["Rainbow trout","Brook trout","Bull trout","Mountain whitefish"],"Rainbow trout are named for the pinkish 'rainbow' stripe down their sides."],
+["🟢","Which fish has wavy 'worm-like' marks on its back and fins with white front edges?",["Brook trout","Northern pike","Rainbow trout","Mountain whitefish"],"Brook trout have wormy marks on their back, red spots with blue halos, and white-edged lower fins."],
+["🦷","Which long fish has a duck-bill shaped mouth full of sharp teeth?",["Northern pike","Mountain whitefish","Brook trout","Rainbow trout"],"Northern pike are ambush hunters. Watch your fingers, those teeth are sharp!"],
+["🏞️","Which native Alberta fish has a small mouth, big silvery scales and lives in cold rivers?",["Mountain whitefish","Northern pike","Brook trout","Goldfish"],"Mountain whitefish live in cold mountain and foothills rivers and eat mostly insects off the bottom."],
+["🦌","A track shaped like a split heart with two pointy toes was most likely made by...",["A deer","A coyote","A bear","A rabbit"],"Deer, moose and elk have split hooves that leave heart-shaped tracks."],
+["🫎","You find a HUGE split-hoof track, much bigger than a deer's. Who made it?",["A moose","A coyote","A squirrel","A bear"],"Moose are the biggest deer in the world, and their tracks can be about 13-15 cm long!"],
+["🐾","A track with 4 toes, claw marks and an oval shape (like a dog's) was most likely made by...",["A coyote","An elk","A deer","A moose"],"Coyotes are wild dogs. Their tracks look like a small dog's, but neater and more oval."],
+["🐻","A wide track with 5 toes and long claw marks, almost like a big bare foot, belongs to...",["A bear","A coyote","A deer","An elk"],"Bear tracks show 5 toes. Grizzly claws are longer than black bear claws."],
+["🌳","Which sign might tell you elk have been around?",["Bark scraped off trees and big hoof tracks","Cobwebs on a fence","Fish bones on a rock","Feathers in a nest"],"Elk scrape bark with their teeth and rub their antlers on trees. Male elk also make loud 'bugle' calls in the fall."],
+["📣","How can you help avoid surprising a bear on the trail?",["Make noise, talk and hike in a group","Hike quietly alone","Wear headphones","Leave snacks on the trail"],"Bears usually avoid people if they hear you coming. Adults can also carry bear spray."],
+["🧭","If you get lost in the woods, what should you do?",["Hug a tree: stay put and wait","Keep walking until you find a road","Run to look for help","Hide so nobody sees you"],"Staying in one spot makes you much easier to find. Blow a whistle (3 blasts) to call for help!"],
+["👫","What's the most important trail rule?",["Stay with your group","Run ahead of everyone","Take shortcuts off trail","Hike after dark alone"],"Always stay with your group and an adult, and let someone know your plan."],
+["🎒","Which item is a must-pack for a hike?",["Water, snacks, a whistle and a rain jacket","A video game","Your pillow","Glass jars of candy"],"Pack water, snacks, extra layers, a whistle, a first aid kit and sun protection. Alberta weather changes fast!"],
+["🪝","Why do anglers use barbless hooks?",["They're easier to remove and hurt fish less","They catch more fish","They're more colourful","They float better"],"Barbless hooks slide out easily, so released fish have a better chance of surviving. Lots of Alberta waters require them."],
+["🪢","Which knot is a common, strong way to tie fishing line to a hook?",["Improved clinch knot","Granny knot","Shoelace bow","Square knot"],"For the improved clinch knot: thread the eye, wrap 5-7 times, go through the loop by the eye, then back through the big loop. Wet it and pull it tight."],
+["💧","When handling a fish you're releasing, you should...",["Wet your hands and keep it in or near the water","Hold it with dry hands for lots of photos","Squeeze it tight","Drop it on the rocks"],"Wet hands protect the fish's slimy coat. Keep it in the water as much as you can and let it swim away on its own."],
+["🗑️","What does Leave No Trace mean for your garbage?",["Pack it in, pack it out","Bury it","Hide it under a rock","Leave it for animals"],"Everything you bring in, you take back out, even orange peels and wrappers."],
+["🌼","Leave No Trace says you should...",["Leave what you find, like flowers and rocks","Pick flowers to take home","Carve your name on trees","Feed the wildlife"],"Take pictures, not things, so the next hikers can enjoy them too. And never feed wildlife!"],
+["🥾","Why should you stay on the marked trail?",["To protect plants and soil","Because off-trail is faster","To scare animals","It doesn't matter"],"Walking off trail tramples plants and causes erosion. Stay on the path!"]
+];
+var $=function(i){return document.getElementById(i)},N=12,qs,i,score,name;
+function shuf(a){a=a.slice();for(var k=a.length-1;k>0;k--){var j=Math.floor(Math.random()*(k+1)),t=a[k];a[k]=a[j];a[j]=t}return a}
+function show(id){["start","game","end"].forEach(function(s){$(s).classList.toggle("hidden",s!==id)})}
+function trail(){var h="🏕️";for(var k=0;k<N;k++)h+='<span class="dot '+(k<i?"done":k==i?"now":"")+'">'+(k==i?"🥾":"")+'</span>';$("trail").innerHTML=h+"🏁"}
+function ask(){var q=qs[i];trail();$("who").textContent="🧒 "+name+" – Stop "+(i+1)+"/"+N;$("score").textContent="⭐ "+score;
+$("qe").textContent=q[0];$("qt").textContent=q[1];$("fb").classList.add("hidden");$("next").classList.add("hidden");var A=$("answers");A.innerHTML="";
+shuf(q[2]).forEach(function(a){var b=document.createElement("button");b.className="ans";b.textContent=a;b.onclick=function(){pick(b,a===q[2][0],q)};A.appendChild(b)})}
+function pick(b,ok,q){Array.prototype.forEach.call($("answers").children,function(x){x.disabled=true;if(x.textContent===q[2][0])x.classList.add("ok")});
+if(ok)score++;else b.classList.add("bad");$("score").textContent="⭐ "+score;var f=$("fb");
+f.textContent=(ok?"🎉 Great job! ":"🌱 Good try! The answer is: "+q[2][0]+". ")+q[3];f.classList.remove("hidden");
+$("next").textContent=i==N-1?"Finish the Trail 🏁":"Next Stop ➡️";$("next").classList.remove("hidden")}
+$("go").onclick=function(){name=$("name").value.trim()||"Explorer";qs=shuf(Q).slice(0,N);i=0;score=0;show("game");ask()};
+$("next").onclick=function(){i++;if(i<N)ask();else end()};
+function end(){var b=score>=10?["🏆","Trail Master","Amazing! You're a true outdoors expert!"]:score>=6?["🧭","Trail Scout","Great hiking! You know a lot about the outdoors."]:["🌱","Trail Rookie","Every hiker starts somewhere. Play again to learn more!"];
+$("bi").textContent=b[0];$("bt").textContent=name+": "+b[1]+"!";$("bm").textContent="You scored "+score+" out of "+N+". "+b[2];show("end")}
+$("again").onclick=function(){show("start")};
+</script></body></html>
